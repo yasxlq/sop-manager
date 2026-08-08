@@ -4,7 +4,816 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>SOP 管理系统</title>
-<link rel="stylesheet" href="style.css">
+<style>
+/* ===== CSS 变量 - 亮色主题 ===== */
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface-hover: #f8fafc;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #dbeafe;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* ===== 暗色主题 ===== */
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --border: #334155;
+  --text: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-light: #1e3a5f;
+  --success: #10b981;
+  --success-light: #064e3b;
+  --danger: #ef4444;
+  --danger-light: #450a0a;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.3);
+}
+
+/* ===== 全局重置 ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===== 顶部导航栏 ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.topbar-left { display: flex; align-items: center; }
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box input {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* ===== 按钮 ===== */
+.btn-primary {
+  padding: 8px 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-muted);
+}
+
+.btn-danger {
+  padding: 8px 20px;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-danger:hover { opacity: 0.9; }
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-icon:hover { background: var(--surface-hover); }
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* ===== 底部分类导航栏 ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  z-index: 150;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nav-item {
+  flex: 1;
+  max-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item .nav-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.nav-item .nav-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.nav-item:active .nav-icon {
+  transform: scale(0.9);
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-2px);
+}
+
+/* ===== 统计栏 ===== */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  padding: 16px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-value.completed { color: var(--success); }
+
+/* ===== SOP 卡片横向排列区域 ===== */
+.board {
+  display: flex;
+  gap: 20px;
+  padding: 24px 24px 120px;
+  overflow-x: auto;
+  min-height: calc(100vh - 180px);
+  align-items: flex-start;
+}
+
+.empty-state {
+  padding-bottom: 120px;
+}
+
+.board::-webkit-scrollbar { height: 8px; }
+.board::-webkit-scrollbar-track { background: var(--bg); }
+.board::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+/* ===== SOP 卡片 ===== */
+.sop-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.sop-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* 顶部色条 */
+.sop-card .card-stripe {
+  height: 4px;
+  width: 100%;
+}
+
+.sop-card[data-color="blue"] .card-stripe { background: #3b82f6; }
+.sop-card[data-color="green"] .card-stripe { background: #10b981; }
+.sop-card[data-color="purple"] .card-stripe { background: #8b5cf6; }
+.sop-card[data-color="orange"] .card-stripe { background: #f59e0b; }
+.sop-card[data-color="pink"] .card-stripe { background: #ec4899; }
+.sop-card[data-color="teal"] .card-stripe { background: #14b8a6; }
+.sop-card[data-color="red"] .card-stripe { background: #ef4444; }
+.sop-card[data-color="slate"] .card-stripe { background: #64748b; }
+
+/* 卡片头部 */
+.card-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-word;
+  flex: 1;
+}
+
+.card-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.card-action-btn {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.card-action-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.card-action-btn.delete:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  word-break: break-word;
+}
+
+.card-category {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.card-category.life { background: #d1fae5; color: #065f46; }
+.card-category.study { background: #dbeafe; color: #1e40af; }
+.card-category.work { background: #fef3c7; color: #92400e; }
+.card-category.other { background: #f3e8ff; color: #6b21a8; }
+
+[data-theme="dark"] .card-category.life { background: #064e3b; color: #6ee7b7; }
+[data-theme="dark"] .card-category.study { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .card-category.work { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .card-category.other { background: #3b0764; color: #c4b5fd; }
+
+.card-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* 卡片内容 */
+.card-body {
+  padding: 12px 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.card-body::-webkit-scrollbar { width: 5px; }
+.card-body::-webkit-scrollbar-track { background: transparent; }
+.card-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* 小标题 */
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 12px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.section-title:first-child { margin-top: 0; }
+
+/* 任务项 */
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.task-item:hover { opacity: 0.8; }
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--text-muted);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+
+.task-checkbox.checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.task-checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.task-text {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+  transition: all 0.2s;
+}
+
+.task-item.completed .task-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 120px;
+  text-align: center;
+}
+
+.empty-state.show { display: flex; }
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.empty-state h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* ===== 模态框 ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+
+.modal-small { max-width: 400px; }
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ===== 表单 ===== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* 颜色选择器 */
+.color-picker {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.color-option:hover { transform: scale(1.1); }
+
+.color-option.selected {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+/* 分类选择器 */
+.category-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cat-option {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cat-option:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.cat-option.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* 小标题编辑器 */
+.sections-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-edit-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.section-edit-block input.section-title-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.section-edit-block input.section-title-input:focus {
+  border-color: var(--primary);
+}
+
+.task-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.task-edit-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.task-edit-row input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
+.task-edit-row input:focus { border-color: var(--primary); }
+
+.task-edit-row button {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.task-edit-row button:hover { background: var(--danger-light); }
+
+.section-edit-block .btn-add-task {
+  font-size: 12px;
+  padding: 4px 10px;
+  color: var(--primary);
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.section-edit-block .btn-add-task:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.section-edit-block .btn-remove-section {
+  font-size: 12px;
+  padding: 4px 10px;
+  color: var(--danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.section-edit-block .btn-remove-section:hover {
+  text-decoration: underline;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+  .topbar {
+    padding: 12px 16px;
+  }
+  .logo { font-size: 16px; }
+  .search-box input { width: 120px; }
+  .stats-bar { gap: 16px; padding: 12px 16px; }
+  .stat-value { font-size: 18px; }
+  .board { padding: 16px 16px 110px; gap: 16px; }
+  .empty-state { padding-bottom: 110px; }
+  .sop-card { width: 280px; min-width: 280px; max-width: 280px; }
+  .btn-primary span { display: none; }
+}
+
+@media (max-width: 480px) {
+  .topbar-right { gap: 8px; }
+  .search-box { display: none; }
+  .board { padding-bottom: 100px; }
+  .empty-state { padding-bottom: 100px; }
+  .sop-card { width: 260px; min-width: 260px; max-width: 260px; }
+  .nav-item .nav-label { font-size: 10px; }
+  .nav-item .nav-icon { font-size: 20px; }
+}
+</style>
 </head>
 <body>
 
@@ -147,6 +956,583 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<script>
+// ===== SOP 管理系统 - 应用逻辑 =====
+
+// 数据存储
+const STORAGE_KEY = 'sop_manager_data';
+const THEME_KEY = 'sop_manager_theme';
+
+let sops = [];
+let editingSopId = null;
+let deletingSopId = null;
+let selectedColor = 'blue';
+let selectedCategory = 'work';
+let currentCategory = 'all';
+let tempSections = [];
+
+// 分类映射
+const CATEGORIES = {
+  life:  { name: '生活', emoji: '🏠' },
+  study: { name: '学习', emoji: '📚' },
+  work:  { name: '工作', emoji: '💼' },
+  other: { name: '其他', emoji: '📦' }
+};
+
+// ===== 初始化 =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  loadTheme();
+  renderBoard();
+  bindEvents();
+});
+
+// ===== 数据加载/保存 =====
+function loadData() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      sops = JSON.parse(stored);
+    } catch(e) {
+      sops = [];
+    }
+  } else {
+    sops = getDefaultSops();
+    saveData();
+  }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sops));
+}
+
+function getDefaultSops() {
+  return [
+    {
+      id: generateId(),
+      title: '每日工作流程',
+      desc: '标准化的日常工作安排',
+      category: 'work',
+      color: 'blue',
+      sections: [
+        {
+          id: generateId(),
+          title: '上午',
+          tasks: [
+            { id: generateId(), text: '查看邮件和消息', done: true },
+            { id: generateId(), text: '参加晨会', done: true },
+            { id: generateId(), text: '处理紧急任务', done: false }
+          ]
+        },
+        {
+          id: generateId(),
+          title: '下午',
+          tasks: [
+            { id: generateId(), text: '专注核心项目开发', done: false },
+            { id: generateId(), text: '回复客户咨询', done: false },
+            { id: generateId(), text: '整理当日工作总结', done: false }
+          ]
+        }
+      ]
+    },
+    {
+      id: generateId(),
+      title: '项目发布流程',
+      desc: '新项目上线的标准操作流程',
+      category: 'work',
+      color: 'green',
+      sections: [
+        {
+          id: generateId(),
+          title: '发布前检查',
+          tasks: [
+            { id: generateId(), text: '完成代码审查', done: false },
+            { id: generateId(), text: '通过全部测试', done: false },
+            { id: generateId(), text: '更新版本号', done: false }
+          ]
+        },
+        {
+          id: generateId(),
+          title: '发布操作',
+          tasks: [
+            { id: generateId(), text: '备份当前版本', done: false },
+            { id: generateId(), text: '部署到生产环境', done: false },
+            { id: generateId(), text: '验证线上服务', done: false }
+          ]
+        }
+      ]
+    },
+    {
+      id: generateId(),
+      title: '每日学习计划',
+      desc: '坚持学习，每天进步',
+      category: 'study',
+      color: 'purple',
+      sections: [
+        {
+          id: generateId(),
+          title: '英语学习',
+          tasks: [
+            { id: generateId(), text: '背诵20个单词', done: false },
+            { id: generateId(), text: '听力练习15分钟', done: false },
+            { id: generateId(), text: '阅读英文文章一篇', done: false }
+          ]
+        },
+        {
+          id: generateId(),
+          title: '专业提升',
+          tasks: [
+            { id: generateId(), text: '观看技术教程30分钟', done: false },
+            { id: generateId(), text: '完成练习题', done: false }
+          ]
+        }
+      ]
+    },
+    {
+      id: generateId(),
+      title: '周末生活清单',
+      desc: '让周末过得更充实',
+      category: 'life',
+      color: 'orange',
+      sections: [
+        {
+          id: generateId(),
+          title: '家务整理',
+          tasks: [
+            { id: generateId(), text: '打扫房间', done: false },
+            { id: generateId(), text: '洗衣服', done: false },
+            { id: generateId(), text: '整理书桌', done: false }
+          ]
+        },
+        {
+          id: generateId(),
+          title: '休闲放松',
+          tasks: [
+            { id: generateId(), text: '运动30分钟', done: false },
+            { id: generateId(), text: '看一部电影', done: false },
+            { id: generateId(), text: '和朋友聚餐', done: false }
+          ]
+        }
+      ]
+    }
+  ];
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+// ===== 主题管理 =====
+function loadTheme() {
+  const theme = localStorage.getItem(THEME_KEY) || 'light';
+  document.body.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+}
+
+function toggleTheme() {
+  const current = document.body.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// ===== 渲染面板 =====
+function renderBoard(filter = '') {
+  const board = document.getElementById('board');
+  const emptyState = document.getElementById('emptyState');
+
+  let filteredSops = currentCategory === 'all'
+    ? [...sops]
+    : sops.filter(sop => (sop.category || 'work') === currentCategory);
+
+  if (filter) {
+    const f = filter.toLowerCase();
+    filteredSops = filteredSops.filter(sop =>
+      sop.title.toLowerCase().includes(f) ||
+      sop.desc.toLowerCase().includes(f) ||
+      sop.sections.some(sec =>
+        sec.title.toLowerCase().includes(f) ||
+        sec.tasks.some(t => t.text.toLowerCase().includes(f))
+      )
+    );
+  }
+
+  if (filteredSops.length === 0) {
+    board.style.display = 'none';
+    if (filter) {
+      emptyState.querySelector('h2').textContent = '未找到匹配的 SOP';
+      emptyState.querySelector('p').textContent = `没有包含"${filter}"的内容`;
+    } else if (currentCategory !== 'all') {
+      const cat = CATEGORIES[currentCategory];
+      emptyState.querySelector('h2').textContent = `${cat.emoji} ${cat.name}分类暂无内容`;
+      emptyState.querySelector('p').textContent = '点击右上角"新建 SOP"开始创建';
+    } else {
+      emptyState.querySelector('h2').textContent = '还没有 SOP';
+      emptyState.querySelector('p').textContent = '点击右上角"新建 SOP"开始创建你的标准操作流程';
+    }
+    emptyState.classList.add('show');
+  } else {
+    board.style.display = 'flex';
+    emptyState.classList.remove('show');
+    board.innerHTML = filteredSops.map(sop => renderCard(sop)).join('');
+  }
+
+  updateStats();
+}
+
+// ===== 渲染单个卡片 =====
+function renderCard(sop) {
+  const totalTasks = sop.sections.reduce((sum, s) => sum + s.tasks.length, 0);
+  const doneTasks = sop.sections.reduce((sum, s) => sum + s.tasks.filter(t => t.done).length, 0);
+  const rate = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+
+  const sectionsHtml = sop.sections.map(section => `
+    <div class="section-title">${escapeHtml(section.title)}</div>
+    ${section.tasks.map(task => `
+      <div class="task-item ${task.done ? 'completed' : ''}" onclick="toggleTask('${sop.id}', '${section.id}', '${task.id}')">
+        <div class="task-checkbox ${task.done ? 'checked' : ''}"></div>
+        <div class="task-text">${escapeHtml(task.text)}</div>
+      </div>
+    `).join('')}
+  `).join('');
+
+  return `
+    <div class="sop-card" data-color="${sop.color}">
+      <div class="card-stripe"></div>
+      <div class="card-header">
+        <div class="card-header-top">
+          <div class="card-title">${escapeHtml(sop.title)}</div>
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="editSop('${sop.id}')" title="编辑">✏️</button>
+            <button class="card-action-btn delete" onclick="confirmDelete('${sop.id}')" title="删除">🗑️</button>
+          </div>
+        </div>
+        ${sop.desc ? `<div class="card-desc">${escapeHtml(sop.desc)}</div>` : ''}
+        <div class="card-category ${sop.category || 'work'}">${getCategoryLabel(sop.category)}</div>
+        <div class="card-progress-info">
+          <div class="progress-bar"><div class="progress-fill" style="width:${rate}%"></div></div>
+          <span class="progress-text">${doneTasks}/${totalTasks}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        ${sectionsHtml || '<p style="color:var(--text-muted);font-size:13px;padding:8px 0;">暂无任务</p>'}
+      </div>
+    </div>
+  `;
+}
+
+// ===== HTML 转义 =====
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== 分类标签显示 =====
+function getCategoryLabel(cat) {
+  const c = CATEGORIES[cat] || CATEGORIES['work'];
+  return `${c.emoji} ${c.name}`;
+}
+
+// ===== 更新统计 =====
+function updateStats() {
+  const totalSops = sops.length;
+  let totalTasks = 0, doneTasks = 0;
+  sops.forEach(sop => {
+    sop.sections.forEach(sec => {
+      totalTasks += sec.tasks.length;
+      doneTasks += sec.tasks.filter(t => t.done).length;
+    });
+  });
+
+  document.getElementById('totalSops').textContent = totalSops;
+  document.getElementById('totalTasks').textContent = totalTasks;
+  document.getElementById('completedTasks').textContent = doneTasks;
+  document.getElementById('completionRate').textContent = totalTasks > 0
+    ? Math.round((doneTasks / totalTasks) * 100) + '%'
+    : '0%';
+}
+
+// ===== 任务打勾 =====
+window.toggleTask = function(sopId, sectionId, taskId) {
+  const sop = sops.find(s => s.id === sopId);
+  if (!sop) return;
+  const section = sop.sections.find(s => s.id === sectionId);
+  if (!section) return;
+  const task = section.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  task.done = !task.done;
+  saveData();
+  renderBoard(document.getElementById('searchInput').value);
+};
+
+// ===== 编辑/新建 SOP =====
+window.editSop = function(sopId) {
+  const sop = sops.find(s => s.id === sopId);
+  if (!sop) return;
+
+  editingSopId = sopId;
+  document.getElementById('modalTitle').textContent = '编辑 SOP';
+  document.getElementById('sopTitle').value = sop.title;
+  document.getElementById('sopDesc').value = sop.desc || '';
+  selectedColor = sop.color;
+  selectedCategory = sop.category || 'work';
+  tempSections = JSON.parse(JSON.stringify(sop.sections));
+
+  updateColorSelection();
+  updateCategorySelection();
+  renderSectionsEditor();
+  showModal();
+};
+
+// ===== 确认删除 =====
+window.confirmDelete = function(sopId) {
+  deletingSopId = sopId;
+  document.getElementById('confirmOverlay').classList.add('show');
+};
+
+// ===== 模态框 =====
+function showModal() {
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function hideModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  editingSopId = null;
+  tempSections = [];
+  selectedColor = 'blue';
+  selectedCategory = 'work';
+  document.getElementById('sopTitle').value = '';
+  document.getElementById('sopDesc').value = '';
+  updateColorSelection();
+  updateCategorySelection();
+  renderSectionsEditor();
+}
+
+// ===== 颜色选择 =====
+function updateColorSelection() {
+  document.querySelectorAll('.color-option').forEach(opt => {
+    opt.classList.toggle('selected', opt.dataset.color === selectedColor);
+  });
+}
+
+// ===== 分类选择 =====
+function updateCategorySelection() {
+  document.querySelectorAll('.cat-option').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.cat === selectedCategory);
+  });
+}
+
+// ===== 小标题编辑器 =====
+function renderSectionsEditor() {
+  const container = document.getElementById('sectionsEditor');
+  if (tempSections.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">点击下方按钮添加小标题</p>';
+    return;
+  }
+
+  container.innerHTML = tempSections.map((section, si) => `
+    <div class="section-edit-block">
+      <input type="text" class="section-title-input" value="${escapeHtml(section.title)}"
+        placeholder="小标题名称"
+        oninput="updateSectionTitle(${si}, this.value)" />
+      <div class="task-edit-list" id="taskList_${si}">
+        ${section.tasks.map((task, ti) => `
+          <div class="task-edit-row">
+            <input type="text" value="${escapeHtml(task.text)}"
+              placeholder="任务内容"
+              oninput="updateTaskText(${si}, ${ti}, this.value)" />
+            <button onclick="removeTask(${si}, ${ti})" title="删除任务">✕</button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="btn-add-task" onclick="addTask(${si})">+ 添加任务</button>
+      <button class="btn-remove-section" onclick="removeSection(${si})">删除此小标题</button>
+    </div>
+  `).join('');
+}
+
+window.updateSectionTitle = function(si, val) {
+  tempSections[si].title = val;
+};
+
+window.updateTaskText = function(si, ti, val) {
+  tempSections[si].tasks[ti].text = val;
+};
+
+window.addTask = function(si) {
+  tempSections[si].tasks.push({ id: generateId(), text: '', done: false });
+  renderSectionsEditor();
+  setTimeout(() => {
+    const list = document.getElementById(`taskList_${si}`);
+    if (list) {
+      const inputs = list.querySelectorAll('input');
+      if (inputs.length > 0) inputs[inputs.length - 1].focus();
+    }
+  }, 50);
+};
+
+window.removeTask = function(si, ti) {
+  tempSections[si].tasks.splice(ti, 1);
+  renderSectionsEditor();
+};
+
+window.removeSection = function(si) {
+  tempSections.splice(si, 1);
+  renderSectionsEditor();
+};
+
+function addSection() {
+  tempSections.push({
+    id: generateId(),
+    title: '',
+    tasks: []
+  });
+  renderSectionsEditor();
+  setTimeout(() => {
+    const blocks = document.querySelectorAll('.section-edit-block');
+    if (blocks.length > 0) {
+      const last = blocks[blocks.length - 1];
+      const input = last.querySelector('.section-title-input');
+      if (input) input.focus();
+    }
+  }, 50);
+}
+
+// ===== 保存 SOP =====
+function saveSop() {
+  const title = document.getElementById('sopTitle').value.trim();
+  const desc = document.getElementById('sopDesc').value.trim();
+
+  if (!title) {
+    alert('请输入大标题');
+    return;
+  }
+
+  const cleanSections = tempSections
+    .filter(s => s.title.trim() || s.tasks.some(t => t.text.trim()))
+    .map(s => ({
+      ...s,
+      title: s.title.trim() || '未命名',
+      tasks: s.tasks.filter(t => t.text.trim()).map(t => ({ ...t, text: t.text.trim() }))
+    }));
+
+  if (editingSopId) {
+    const sop = sops.find(s => s.id === editingSopId);
+    if (sop) {
+      sop.title = title;
+      sop.desc = desc;
+      sop.category = selectedCategory;
+      sop.color = selectedColor;
+      sop.sections = cleanSections;
+    }
+  } else {
+    sops.push({
+      id: generateId(),
+      title,
+      desc,
+      category: selectedCategory,
+      color: selectedColor,
+      sections: cleanSections
+    });
+  }
+
+  saveData();
+  hideModal();
+  renderBoard(document.getElementById('searchInput').value);
+}
+
+// ===== 事件绑定 =====
+function bindEvents() {
+  // 底部导航分类切换
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      currentCategory = item.dataset.category;
+      document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+      item.classList.add('active');
+      renderBoard(document.getElementById('searchInput').value);
+    });
+  });
+
+  // 新建按钮
+  document.getElementById('addSopBtn').addEventListener('click', () => {
+    editingSopId = null;
+    document.getElementById('modalTitle').textContent = '新建 SOP';
+    document.getElementById('sopTitle').value = '';
+    document.getElementById('sopDesc').value = '';
+    selectedColor = 'blue';
+    selectedCategory = currentCategory !== 'all' ? currentCategory : 'work';
+    tempSections = [];
+    updateColorSelection();
+    updateCategorySelection();
+    renderSectionsEditor();
+    showModal();
+    setTimeout(() => document.getElementById('sopTitle').focus(), 100);
+  });
+
+  document.getElementById('addSectionBtn').addEventListener('click', addSection);
+  document.getElementById('saveBtn').addEventListener('click', saveSop);
+  document.getElementById('cancelBtn').addEventListener('click', hideModal);
+  document.getElementById('closeModal').addEventListener('click', hideModal);
+
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') hideModal();
+  });
+
+  document.querySelectorAll('.color-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedColor = opt.dataset.color;
+      updateColorSelection();
+    });
+  });
+
+  document.querySelectorAll('.cat-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedCategory = opt.dataset.cat;
+      updateCategorySelection();
+    });
+  });
+
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    renderBoard(e.target.value);
+  });
+
+  document.getElementById('confirmDelete').addEventListener('click', () => {
+    if (deletingSopId) {
+      sops = sops.filter(s => s.id !== deletingSopId);
+      saveData();
+      renderBoard(document.getElementById('searchInput').value);
+    }
+    document.getElementById('confirmOverlay').classList.remove('show');
+    deletingSopId = null;
+  });
+
+  document.getElementById('confirmCancel').addEventListener('click', () => {
+    document.getElementById('confirmOverlay').classList.remove('show');
+    deletingSopId = null;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hideModal();
+      document.getElementById('confirmOverlay').classList.remove('show');
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if (document.getElementById('modalOverlay').classList.contains('show')) {
+        saveSop();
+      }
+    }
+  });
+}
+</script>
 </body>
 </html>
