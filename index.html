@@ -22,25 +22,6 @@
   </div>
 </header>
 
-<!-- 分类标签栏 -->
-<div class="category-bar" id="categoryBar">
-  <button class="category-tag active" data-category="all">
-    <span class="tag-emoji">📌</span> 全部
-  </button>
-  <button class="category-tag" data-category="life">
-    <span class="tag-emoji">🏠</span> 生活
-  </button>
-  <button class="category-tag" data-category="study">
-    <span class="tag-emoji">📚</span> 学习
-  </button>
-  <button class="category-tag" data-category="work">
-    <span class="tag-emoji">💼</span> 工作
-  </button>
-  <button class="category-tag" data-category="other">
-    <span class="tag-emoji">📦</span> 其他
-  </button>
-</div>
-
 <!-- 统计栏 -->
 <div class="stats-bar" id="statsBar">
   <div class="stat-item">
@@ -72,6 +53,30 @@
   <h2>还没有 SOP</h2>
   <p>点击右上角"新建 SOP"开始创建你的标准操作流程</p>
 </div>
+
+<!-- 底部分类导航栏 -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-category="all">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">全部</span>
+  </button>
+  <button class="nav-item" data-category="life">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">生活</span>
+  </button>
+  <button class="nav-item" data-category="study">
+    <span class="nav-icon">📚</span>
+    <span class="nav-label">学习</span>
+  </button>
+  <button class="nav-item" data-category="work">
+    <span class="nav-icon">💼</span>
+    <span class="nav-label">工作</span>
+  </button>
+  <button class="nav-item" data-category="other">
+    <span class="nav-icon">📦</span>
+    <span class="nav-label">其他</span>
+  </button>
+</nav>
 
 <!-- 编辑模态框 -->
 <div class="modal-overlay" id="modalOverlay">
